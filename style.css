@@ -14,6 +14,10 @@
 }
 
 .active .preloader-wrapper{
-	top: 50%;
-    left: 50%;
+	top: calc(50% - 32px);
+    left: calc(50% - 32px);
+}
+
+.logged-in, .logged-out{
+	display: none;
 }
