@@ -108,16 +108,16 @@ auth.onAuthStateChanged( user => {
 		renderLinks( user );
 
 		// Getting data from firestore.
-		// db.collection( 'guides' ).onSnapshot( ( snapshot ) => {
+		db.collection( 'guides' ).onSnapshot( ( snapshot ) => {
 
-		// 	// Closing preloader.
-		preloader.classList.remove( 'active' );
+			// Closing preloader.
+			preloader.classList.remove( 'active' );
 
-		// 	renderGuide( snapshot );
+			renderGuide( snapshot );
 
-		// }, ( error ) => {
-		// 	console.log( 'Opps you have an error: ' + error.message );
-		// } );
+		}, ( error ) => {
+			console.log( 'Opps you have an error: ' + error.message );
+		} );
 	} else {
 
 		// Closing preloader.
