@@ -1,7 +1,8 @@
 const signupForm = document.getElementById( 'signup-form' );
 const preloader = document.querySelector( '.preloader-background' );
 const logout = document.getElementById( 'logout' );
-const loginForm = document.getElementById( 'login-form' )
+const loginForm = document.getElementById( 'login-form' );
+const addGuide = document.getElementById( 'create-form' );
 
 
 // Sign-up callback.
@@ -11,13 +12,21 @@ function signupSubmit( e ) {
 	// Get user info.
 	const signupEmail = this.signupemail.value;
 	const signupPassword = this.signuppassword.value;
+	const signupBio = this.signupbio.value;
 
 	// Activate preloader.
 	preloader.classList.add( 'active' );
 
 	// Sign up the user.
 	auth.createUserWithEmailAndPassword( signupEmail, signupPassword ).then( credential => {
-		
+
+		// Adding bio in firestore with same user id and document id.
+		return db.collection( 'users' ).doc( credential.user.uid ).set( {
+			bio: signupBio,
+		} );
+
+	} ).then( () => {
+
 		// Closing preloader.
 		preloader.classList.remove( 'active' );
 
@@ -113,10 +122,10 @@ auth.onAuthStateChanged( user => {
 			// Closing preloader.
 			preloader.classList.remove( 'active' );
 
-			renderGuide( snapshot );
+			renderGuide( snapshot.docs );
 
-		}, ( error ) => {
-			console.log( 'Opps you have an error: ' + error.message );
+		}, ( err ) => {
+			console.log( 'Opps you have an error: ' + err.message );
 		} );
 	} else {
 
@@ -130,6 +139,44 @@ auth.onAuthStateChanged( user => {
 } );
 
 
+// Create guide callback function.
+function createGuide( e ) {
+	e.preventDefault();
+
+	// Getting form data.
+	const guidetitle = this.guidetitle.value;
+	const guidecontent = this.guidecontent.value;
+
+	// Making sure form is not empty.
+	if( guidetitle != '' && guidecontent != '' ) {
+
+		// Activate preloader.
+		preloader.classList.add( 'active' );
+
+		db.collection( 'guides' ).add( {
+			title: guidetitle,
+			content: guidecontent,
+
+		} ).then( () => {
+			// Closing preloader.
+			preloader.classList.remove( 'active' );
+
+			// Closing the modal after login up.
+			const modal = document.getElementById( 'modal-create' );
+			M.Modal.getInstance( modal ).close();
+
+			// Reset the form value.
+			addGuide.reset();
+
+		} ).catch( err => {
+			console.log( 'Opps you have an error: ' + err.message );
+		} );
+	} else {
+		alert( 'Either of the two forms is empty!' );
+	}
+}
+
+
 
 // Listen for sign-up form submit.
 signupForm.addEventListener( 'submit', signupSubmit );
@@ -139,3 +186,6 @@ logout.addEventListener( 'click', handleLogout );
 
 // Listen for log-in form submit.
 loginForm.addEventListener( 'submit', loginSubmit );
+
+// Add guide in db.
+addGuide.addEventListener( 'submit', createGuide );

@@ -21,3 +21,7 @@
 .logged-in, .logged-out{
 	display: none;
 }
+
+.account-details > h5{
+	font-weight: bold;
+}
